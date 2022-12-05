@@ -1,12 +1,13 @@
 Day1
 | serialize 
-| extend grp = row_cumsum(iif(sign(data) == -1, 1, 0))
-| summarize grpsum = sumif(data, data > 0) by grp
+| extend grp = row_cumsum(iif(sign(Calories) == -1, 1, 0))
+| summarize grpsum = sumif(Calories, Calories > 0) by grp
 | top 1 by grpsum
+| project Result = grpsum 
 
 Day1
 | serialize 
-| extend grp = row_cumsum(iif(sign(data) == -1, 1, 0))
-| summarize grpsum = sumif(data, data > 0) by grp
+| extend grp = row_cumsum(iif(sign(Calories) == -1, 1, 0))
+| summarize grpsum = sumif(Calories, Calories > 0) by grp
 | top 3 by grpsum
-| summarize  sum(grpsum)
+| summarize Reuslt = sum(grpsum)
