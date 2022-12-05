@@ -1,0 +1,35 @@
+Day4
+| extend
+    FirstElfLow = toint(split(FirstElf, '-')[0])
+    , FirstElfHigh = toint(split(FirstElf, '-')[1])
+    , SecondElfLow = toint(split(SecondElf, '-')[0])
+    , SecondElfHigh = toint(split(SecondElf, '-')[1])
+| where
+(
+    FirstElfLow <= SecondElfLow
+    and FirstElfHigh >= SecondElfHigh
+)
+or
+(
+    SecondElfLow <= FirstElfLow
+    and SecondElfHigh >= FirstElfHigh
+)
+| summarize Reuslt = count()
+
+Day4
+| extend
+    FirstElfLow = toint(split(FirstElf, '-')[0])
+    , FirstElfHigh = toint(split(FirstElf, '-')[1])
+    , SecondElfLow = toint(split(SecondElf, '-')[0])
+    , SecondElfHigh = toint(split(SecondElf, '-')[1])
+| where
+(
+    FirstElfHigh >= SecondElfLow
+    and FirstElfLow <= SecondElfHigh
+)
+or
+(
+    SecondElfHigh >= FirstElfLow
+    and SecondElfLow <= FirstElfHigh
+)
+| summarize Reuslt = count()

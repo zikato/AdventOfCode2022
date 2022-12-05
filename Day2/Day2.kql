@@ -1,0 +1,87 @@
+// generate a table 
+let Shapes = datatable (Shape:string, abc:string, xyz:string, value:int)
+[
+    "Rock", "A", "X", 1
+    , "Paper", "B", "Y", 2
+    , "Scissors", "C", "Z", 3
+];
+Shapes
+| extend CrossJoin = 1
+| join kind=inner (
+    Shapes
+    | extend CrossJoin = 1
+) on CrossJoin
+| project
+    P1 = Shape
+    , P2= Shape1
+    , P1Result = "win"
+    , P1Score = 1
+
+
+let Outcomes = datatable(P1: string, P2: string, P1Outcome: string, P1Score: long)
+[
+    "Scissors"  , "Rock"    , "lost", 0, 
+    "Paper"     , "Rock"    , "win" , 6, 
+    "Rock"      , "Rock"    , "draw", 3, 
+    "Scissors"  , "Paper"   , "win" , 6, 
+    "Paper"     , "Paper"   , "draw", 3, 
+    "Rock"      , "Paper"   , "lost", 0, 
+    "Scissors"  , "Scissors", "draw", 3, 
+    "Paper"     , "Scissors", "lost", 0, 
+    "Rock"      , "Scissors", "win" , 6, 
+];
+let Shapes = datatable (Shape: string, abc: string, xyz: string, value: int)
+[
+    "Rock", "A", "X", 1
+    ,
+    "Paper", "B", "Y", 2
+    ,
+    "Scissors", "C", "Z", 3
+];
+Day2
+| lookup kind=inner Shapes
+    on $left.Me == $right.xyz // Me
+| lookup kind=inner Shapes
+    on $left.Opponent == $right.abc // Opponent
+| lookup kind=inner Outcomes
+    on $left.Shape == $right.P1 // Shape = Me
+    and $left.Shape1== $right.P2 // Shape1 = Opponent
+| summarize Score = sum(value + P1Score)
+
+
+let Outcomes = datatable(P1: string, P2: string, P1Outcome: string, P1Score: long)
+[
+    "Scissors"  , "Rock"    , "lost", 0, 
+    "Paper"     , "Rock"    , "win" , 6, 
+    "Rock"      , "Rock"    , "draw", 3, 
+    "Scissors"  , "Paper"   , "win" , 6, 
+    "Paper"     , "Paper"   , "draw", 3, 
+    "Rock"      , "Paper"   , "lost", 0, 
+    "Scissors"  , "Scissors", "draw", 3, 
+    "Paper"     , "Scissors", "lost", 0, 
+    "Rock"      , "Scissors", "win" , 6, 
+];
+let Shapes = datatable (Shape: string, abc: string, xyz: string, value: int)
+[
+    "Rock", "A", "X", 1
+    ,
+    "Paper", "B", "Y", 2
+    ,
+    "Scissors", "C", "Z", 3
+];
+Day2
+| lookup kind=inner Shapes
+    on $left.Opponent == $right.abc // Opponent
+| extend Outcome = case
+(
+    Me == "X", "lost"
+    , Me == "Y", "draw"
+    , Me == "Z", "win"
+    , ""
+)
+| lookup kind=inner Outcomes
+    on $left.Outcome == $right.P1Outcome
+    and $left.Shape == $right.P2 // Shape = Opponent
+| lookup kind=inner Shapes
+    on $left.P1 == $right.Shape// Opponent  
+| summarize Score = sum(P1Score + value1)

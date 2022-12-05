@@ -1,0 +1,39 @@
+
+// Part 1
+let LetterTable = print Letter = split('a,b,c,d,e,f,g,h,i,j,k,l,m,n,o,p,q,r,s,t,u,v,w,x,y,z,A,B,C,D,E,F,G,H,I,J,K,L,M,N,O,P,Q,R,S,T,U,V,W,X,Y,Z', ',')
+| mv-expand Letter
+| serialize 
+| extend LetterValue = row_number(), CrossJoin = 1;
+LetterTable
+| join kind=inner 
+(
+    Day3
+    | extend CrossJoin = 1
+)
+on CrossJoin
+| extend 
+    IsIn1st = indexof(Rucksack, Letter, 0, strlen(Rucksack)/2)
+    , IsIn2nd = indexof(Rucksack, Letter, strlen(Rucksack)/2)
+| where IsIn1st >= 0 and  IsIn2nd >= 0
+| summarize Result = sum(LetterValue)
+
+
+
+
+// Part 2
+let LetterTable = print Letter = split('a,b,c,d,e,f,g,h,i,j,k,l,m,n,o,p,q,r,s,t,u,v,w,x,y,z,A,B,C,D,E,F,G,H,I,J,K,L,M,N,O,P,Q,R,S,T,U,V,W,X,Y,Z', ',')
+| mv-expand Letter
+| serialize 
+| extend Letter= tostring(Letter), LetterValue = row_number(), CrossJoin = 1;
+LetterTable
+| join kind=inner 
+(
+    Day3
+    | extend CrossJoin = 1
+)
+on CrossJoin
+| where indexof(Rucksack, Letter) >= 0
+| extend GroupOfThree = (Id - 1) / 3
+| summarize Count =  count() by GroupOfThree, LetterValue
+| where Count == 3
+| summarize Result = sum(LetterValue)

@@ -1,0 +1,7 @@
+Find
+^([A-Z]) ([A-Z])$
+
+Replace
+, '$1', '$2'
+
+Manually remove the first leading comma
