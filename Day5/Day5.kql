@@ -1,0 +1,52 @@
+// Not solved. Kusto cannot do recursion or loops and I can't currently think of a set-based solution
+// These are just my experiments
+
+
+// let Crane = Day5Crane
+// | extend CrossJoin = 1;
+// Crane
+// | join kind=inner
+// (
+//     Day5
+//     | parse Instruction with  * "move " CrateCount " from " FromCol " to " ToCol
+//     | project-away Instruction
+//     | serialize 
+//     | extend 
+//         InstructionId = row_number()
+//         , CrossJoin = 1
+// ) on CrossJoin
+// | order by InstructionId asc, Id asc
+// |where InstructionId <= 2
+// 
+// 
+
+let Crane = toscalar
+(
+    Day5Crane
+    | summarize arr = make_list(Crates)
+);
+let CraneInline = datatable 
+(Col1:string, Col2:string, Col3:string, Col4:string, Col5:string, Col6:string, Col7:string ,Col8:string ,Col9:string, CrossJoin:int)
+[
+    'MJCBFRLH' , 'ZCD' , 'HJFCNGW' , 'PJDMTSB' , 'NCDRJ' , 'WLDQPJGZ' , 'PZTFRH' , 'LVMG' , 'CBGPFQRJ', 1
+];
+Day5
+| parse Instruction with  * "move " CrateCount " from " FromCol " to " ToCol
+| serialize 
+| project 
+    CrateCount = toint(CrateCount)
+    , FromCol = toint(FromCol)
+    , ToCol = toint(ToCol)
+| extend 
+    InstructionId = row_number()
+    , CrossJoin = 1
+//     , CraneArray = Crane
+| join kind= inner CraneInline
+    on CrossJoin
+| project-away CrossJoin, CrossJoin1
+| where InstructionId < 4
+| order by InstructionId asc
+| extend Col1 = strcat(iif(isempty(prev(Col1)), Col1, prev(Col1)), tostring(CrateCount))
+// | extend 
+//     FromColString = CraneArray[FromCol]
+//     , ToColString = CraneArray[ToCol]
